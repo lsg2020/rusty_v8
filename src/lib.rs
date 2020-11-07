@@ -70,6 +70,7 @@ mod typed_array;
 mod value;
 mod value_deserializer;
 mod value_serializer;
+mod thread;
 
 pub mod inspector;
 pub mod json;
@@ -137,6 +138,8 @@ pub use value_deserializer::ValueDeserializerImpl;
 pub use value_serializer::ValueSerializer;
 pub use value_serializer::ValueSerializerHelper;
 pub use value_serializer::ValueSerializerImpl;
+pub use thread::Locker;
+pub use thread::IsolateScope;
 
 // TODO(piscisaureus): Ideally this trait would not be exported.
 pub use support::MapFnTo;
