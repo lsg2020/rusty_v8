@@ -2364,3 +2364,14 @@ bool v8__ValueDeserializer__ReadRawBytes(v8::ValueDeserializer* self,
   return self->ReadRawBytes(length, data);
 }
 }  // extern "C"
+extern "C" {
+void v8__Locker__CONSTRUCT(uninit_t<v8::Locker>* buf, v8::Isolate* isolate) {
+  static_assert(sizeof(v8::Locker) == sizeof(size_t) * 2,
+                "v8::Locker size mismatch");
+  construct_in_place<v8::Locker>(buf, isolate);
+}
+void v8__Locker__DESTRUCT(v8::Locker* self) {
+  self->~Locker();
+}
+
+}  // extern "C"
