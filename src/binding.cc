@@ -2338,13 +2338,34 @@ bool v8__ValueDeserializer__ReadRawBytes(v8::ValueDeserializer* self,
   return self->ReadRawBytes(length, data);
 }
 }  // extern "C"
+
+#include "v8/src/execution/isolate-inl.h"
+struct CUSTOM_ARCHIVE {
+  int debug_flag;
+  v8::internal::Isolate* debug_isolate;
+};
+
 extern "C" {
-void v8__Locker__CONSTRUCT(uninit_t<v8::Locker>* buf, v8::Isolate* isolate) {
+void v8__Locker__CONSTRUCT(uninit_t<v8::Locker>* buf, v8::Isolate* isolate, void* custom_archive) {
   static_assert(sizeof(v8::Locker) == sizeof(size_t) * 2,
                 "v8::Locker size mismatch");
   construct_in_place<v8::Locker>(buf, isolate);
+  if (custom_archive) {
+    CUSTOM_ARCHIVE* header = (CUSTOM_ARCHIVE*)custom_archive;
+    header->debug_isolate = reinterpret_cast<v8::internal::Isolate*>(isolate);
+
+    if (header->debug_flag) {
+      header->debug_isolate->debug()->RestoreDebug((char*)(header+1));
+      header->debug_flag = 0;
+    }
+  }
 }
-void v8__Locker__DESTRUCT(v8::Locker* self) {
+void v8__Locker__DESTRUCT(v8::Locker* self, void* custom_archive) {
+  if (custom_archive) {
+    CUSTOM_ARCHIVE* header = (CUSTOM_ARCHIVE*)custom_archive;
+    header->debug_isolate->debug()->ArchiveDebug((char*)(header+1));
+    header->debug_flag = 1;
+  }
   self->~Locker();
 }
 
