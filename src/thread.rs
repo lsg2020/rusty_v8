@@ -31,7 +31,7 @@ impl Drop for Locker {
 pub struct IsolateScope(*mut Isolate);
 impl IsolateScope {
     pub fn new(isolate: &mut Isolate) -> Self {
-        isolate.enter_isolate();
+        unsafe { isolate.enter() };
         Self(isolate)
     }
 }
@@ -39,6 +39,6 @@ impl IsolateScope {
 impl Drop for IsolateScope {
     fn drop(&mut self) {
         let isolate = unsafe { &mut *self.0 };
-        isolate.exit_isolate();
+        unsafe { isolate.exit() };
     }
 }
