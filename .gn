@@ -21,7 +21,7 @@ default_args = {
   use_sysroot = false
 
   use_dummy_lastchange = true
-  treat_warnings_as_errors = true
+  treat_warnings_as_errors = false
 
   # TODO(ry) remove
   v8_imminent_deprecation_warnings = false
